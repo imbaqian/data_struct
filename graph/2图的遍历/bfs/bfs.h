@@ -6,6 +6,7 @@
 
 
 extern Vertex VisitedBFS[MaxVertexNum];
+
 void Visit(Vertex V);
 
 void BFS(LGraph Graph,Vertex V,void (*Visit)(Vertex) );

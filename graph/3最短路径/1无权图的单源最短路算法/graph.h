@@ -47,7 +47,7 @@ LGraph CreateGraph(int VertexNum);
 /*向图中插入一个边*/
 void InsertEdge(LGraph Graph , Edge E);
 /*建表哦*/
-LGraph BuildGraph(int nv , int ne);
+LGraph BuildGraph();
 
 
 

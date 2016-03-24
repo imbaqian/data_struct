@@ -3,6 +3,7 @@
 */
 #include "graph.h"
 #include <malloc.h>
+#include <stdio.h>
 
 LGraph CreateGraph(int VertexNum)
 {
@@ -44,15 +45,19 @@ void InsertEdge(LGraph Graph,Edge E)
 	
 }
 
-LGraph BuildGraph(int nv , int ne)
+LGraph BuildGraph()
 {
 	int i;
+	int nv,ne;
 	LGraph newGraph;
 	Edge newEdge;
+	printf("input Nv,Ne:");
+	scanf("%d %d",&nv,&ne);
 	newGraph = CreateGraph(nv);
 	newGraph->ne = ne; 
 	for(i = 0; i< ne; i++){
-		newEdge = (Edge)malloc(sizeof(struct ENode));	
+		newEdge = (Edge)malloc(sizeof(struct ENode));
+		printf("input <v1,v2>");	
 		scanf("%d %d",&newEdge->v1,&newEdge->v2);/*有权重就读权重呗*/
 		InsertEdge(newGraph,newEdge);	
 	}

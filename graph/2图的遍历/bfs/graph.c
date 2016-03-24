@@ -33,7 +33,7 @@ void InsertEdge(LGraph Graph,Edge E)
 
 	/*无向图既要<v1,v2> 也要 <v2,v1>*/
 	PtrToAdjVNode newAdjV2 = (PtrToAdjVNode)malloc(sizeof(struct AdjVNode));
-	newAdjV1->AdjV = E->v1;
+	newAdjV2->AdjV = E->v1;
 
 	/*同样，需要权重在这里添加 ↓ */
 	//newAdjV2->weight = E->weight;
@@ -50,9 +50,10 @@ LGraph BuildGraph(int nv , int ne)
 	LGraph newGraph;
 	Edge newEdge;
 	newGraph = CreateGraph(nv);
+	newGraph->ne = ne; 
 	for(i = 0; i< ne; i++){
 		newEdge = (Edge)malloc(sizeof(struct ENode));	
-		scanf("%d %d",newEdge->v1,newEdge->v2);/*有权重就读权重呗*/
+		scanf("%d %d",&newEdge->v1,&newEdge->v2);/*有权重就读权重呗*/
 		InsertEdge(newGraph,newEdge);	
 	}
 	return newGraph;

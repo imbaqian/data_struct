@@ -2,7 +2,7 @@
 #include <stdio.h>
 int VisitedDFS[MaxVertexNum];
 
-void Visited(Vertex V)
+void Visit(Vertex V)
 {
     printf("%d ",V);
 }
