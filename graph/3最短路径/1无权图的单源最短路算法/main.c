@@ -6,8 +6,8 @@
 #include "graph.h"
 #include "queue.h"
 
-int dist[MaxVertexNum];
-int path[MaxVertexNum];
+int dist[MaxVertexNum]; /*dist[i] 记录顶点i距离Source的距离*/ 
+int path[MaxVertexNum]; /*path[i] 记录顶点i的前一个顶点*/
 
 void Unweighted(LGraph Graph, Vertex S)
 {
@@ -20,7 +20,7 @@ void Unweighted(LGraph Graph, Vertex S)
 	while(queue->rear != queue->front){
 		v = DeleteQueue(queue);
 		for(w = Graph->G[v].FirstEdge ; NULL != w ; w = w->next )
-			if(dist[w->AdjV] != -1){
+			if(dist[w->AdjV] == -1){ /**/
 				dist[w->AdjV] = dist[v] + 1;
 				path[w->AdjV] = v;
 				AddQueue(queue,w->AdjV);
