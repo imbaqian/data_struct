@@ -13,9 +13,9 @@
 
 
 /*返回未被收录顶点中dist最小者*/
-Vertex FindMinDist( LGraph Graph,Vertex V, int collected[])
+Vertex FindMinDist( LGraph Graph,Vertex V,int dist[], int collected[])
 {
-	Vertex minV;
+	Vertex minV;/*待返回的值*/
 	PtrToAdjVNode w;
 	int MinDist = INFINITY;
 	for(w = Graph->G[V].FirstEdge; NULL != w; w=w->next)
@@ -32,18 +32,26 @@ Vertex FindMinDist( LGraph Graph,Vertex V, int collected[])
 
 int Dijkstra(LGraph Graph, int dist[],int path[],Vertex S)
 {
+	int i;
 	int collected[MaxVertexNum];
 	Vertex v;
 	PtrToAdjVNode w;
 	/*初始化collected[]*/
 	for(v = 0;v<Graph->nv;v++)
+	{
 		collected[v] = -1;
+	}
+	for(w=Graph->G[S].FirstEdge;w!=NULL;w=w->next){
+		dist[w->AdjV] = w->weight;
+		path[w->AdjV] = S;
+	}
+	
 	/*收录S*/
 	dist[S] = 0;
 	collected[S] = 1;
-	v = S; 
+	v = S;
 	while(1){
-		v = FindMinDist(Graph,v,collected);
+		v = FindMinDist(Graph,v,dist,collected);
 		if( -1 == v )
 			break;
 		collected[v] = 1;
@@ -55,7 +63,10 @@ int Dijkstra(LGraph Graph, int dist[],int path[],Vertex S)
 				}
 			}
 	}
-	
+	for(i=0;i<Graph->nv;i++){
+		printf("%d ",collected[i]);
+	}
+	printf("\n");
 
 	return 1;/*算法执行完毕。返回正确标记*/	
 }
@@ -85,14 +96,6 @@ int main()
 	printf("\n");
 	for(i=0;i<graph->nv;i++){
 		printf("%d ",dist[i]);
-	}
-
-		
-	return 0;	
-
-
-
-
-
-
+	}	
+	return 0;
 }
