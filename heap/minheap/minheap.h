@@ -29,6 +29,6 @@ ElementType DeleteMinHeap(MinHeap H);
 
 /*下滤：将H中以H->Data[p]为根的子堆调为最小堆*/
 void PerDown(MinHeap H,int p);
-void BuildHeap(MinHeap H);
-
+/*建最小堆,堆的大元素个数为MaxSize*/
+MinHeap BuildMinHeap(int MaxSize);
 #endif
