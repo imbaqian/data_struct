@@ -69,18 +69,17 @@ void PerDown(MinHeap H,int p)/*和删除操作类似*/
 	int child;
 	int parent;
 	ElementType temp;
-	temp = H->Data[p];
+	temp = H->Data[p];/*记录父亲结点*/
 	for(parent = p;parent*2 <= H->Size;parent = child){
 		child = parent * 2;
 		if(child != H->Size)
-			if(H->Data[child] > H->Data[child + 1])
+			if(H->Data[child] > H->Data[child + 1])/*找出儿子中的较小值*/
 				child++;
 		
-		if(H->Data[parent] > H->Data[child])
+		if( temp > H->Data[child])/*如果父亲小于大于儿子，就让小儿子上来*/
 			H->Data[parent] = H->Data[child];
-		
 	}
-	H->Data[parent] = temp;
+	H->Data[child] = temp;
 }
 
 /*调整H，使之成为最小堆*/
@@ -96,7 +95,9 @@ MinHeap BuildMinHeap(int MaxSize)
 	
 	for(i=1;i <= dataNum;i++){
 		scanf("%d",&data);
-		InsertMinHeap(mh,data);
+		mh->Size++;
+		mh->Data[i] = data;
+		
 	}
 	for(i=mh->Size/2; i>0 ; i--){
 		PerDown(mh,i);
