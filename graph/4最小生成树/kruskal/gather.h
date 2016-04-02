@@ -4,9 +4,9 @@
 
 #ifndef GATHER_H_
 #define GATHER_H_
-
+#include "graph.h"
 #define MAXN 1000		/*集合最大元素个数*/
-typedef int ElementType;/*默认元素可以用非负整数表示*/
+typedef Vertex ElementType;/*默认元素可以用非负整数表示*/
 typedef ElementType SetName;	/*默认用根节点的下表作为集合名称*/
 typedef struct SetNode{
 	ElementType Data;
