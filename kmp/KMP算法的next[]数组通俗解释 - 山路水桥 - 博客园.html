@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园</title>
+<link type="text/css" rel="stylesheet" href="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/bundle-BlackLowKey.css">
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/10jschen/rss">
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/10jschen/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/10jschen/wlwmanifest.xml">
+<script type="text/javascript" src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/encoder.js"></script><script src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = '10jschen', cb_enable_mathjax=false;</script>
+<script src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/blog-common.js" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="http://www.cnblogs.com/10jschen/"><img id="blogLogo" src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/10jschen/">山路水桥</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="MyLinks1_HomeLink" class="menu" href="http://www.cnblogs.com/">博客园</a></li>
+<li><a id="MyLinks1_MyHomeLink" class="menu" href="http://www.cnblogs.com/10jschen/">首页</a></li>
+<li><a id="MyLinks1_NewPostLink" class="menu" rel="nofollow" href="http://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="MyLinks1_ContactLink" class="menu" rel="nofollow" href="http://msg.cnblogs.com/send/%E5%B1%B1%E8%B7%AF%E6%B0%B4%E6%A1%A5">联系</a></li>
+<li><a id="MyLinks1_Syndication" class="menu" href="http://www.cnblogs.com/10jschen/rss">订阅</a>
+<!--<a id="MyLinks1_XMLLink" class="aHeaderXML" href="http://www.cnblogs.com/10jschen/rss"><img src="http://www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="MyLinks1_Admin" class="menu" rel="nofollow" href="http://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			
+<span id="stats_post_count">随笔 - 150&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 10</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+<div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html">KMP算法的next[]数组通俗解释</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body"><p>我们在一个母字符串中查找一个子字符串有很多方法。KMP是一种最常见的改进算法，它可以在匹配过程中失配的情况下，有效地多往后面跳几个字符，加快匹配速度。</p>
+<p>当然我们可以看到这个算法针对的是子串有对称属性，如果有对称属性，那么就需要向前查找是否有可以再次匹配的内容。</p>
+<p>&nbsp;</p>
+<p>在KMP算法中有个数组，叫做前缀数组，也有的叫next数组，每一个子串有一个固定的next数组，它记录着字符串匹配过程中失配情况下可以向前多跳几个字符，当然它描述的也是子串的对称程度，程度越高，值越大，当然之前可能出现再匹配的机会就更大。</p>
+<p>这个next数组的求法是KMP算法的关键，但不是很好理解，我在这里用通俗的话解释一下，看到别的地方到处是数学公式推导，看得都蛋疼，这个篇文章仅贡献给不喜欢看数学公式又想理解KMP算法的同学。</p>
+<p>&nbsp;</p>
+<h3>1、用一个例子来解释，下面是一个子串的next数组的值，可以看到这个子串的对称程度很高，所以next值都比较大。</h3>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td valign="top" width="77">
+<p>位置i</p>
+</td>
+<td valign="top" width="30">
+<p>0</p>
+</td>
+<td valign="top" width="30">
+<p>1</p>
+</td>
+<td valign="top" width="30">
+<p>2</p>
+</td>
+<td valign="top" width="30">
+<p>3</p>
+</td>
+<td valign="top" width="30">
+<p>4</p>
+</td>
+<td valign="top" width="30">
+<p>5</p>
+</td>
+<td valign="top" width="30">
+<p>6</p>
+</td>
+<td valign="top" width="30">
+<p>7</p>
+</td>
+<td valign="top" width="30">
+<p>8</p>
+</td>
+<td valign="top" width="30">
+<p>9</p>
+</td>
+<td valign="top" width="30">
+<p>10</p>
+</td>
+<td valign="top" width="30">
+<p>11</p>
+</td>
+<td valign="top" width="30">
+<p>12</p>
+</td>
+<td valign="top" width="30">
+<p>13</p>
+</td>
+<td valign="top" width="30">
+<p>14</p>
+</td>
+<td valign="top" width="30">
+<p>15</p>
+</td>
+</tr>
+<tr>
+<td valign="top" width="77">
+<p>前缀next[i]</p>
+</td>
+<td valign="top" width="30">
+<p>0</p>
+</td>
+<td valign="top" width="30">
+<p>0</p>
+</td>
+<td valign="top" width="30">
+<p>0</p>
+</td>
+<td valign="top" width="30">
+<p>0</p>
+</td>
+<td valign="top" width="30">
+<p>1</p>
+</td>
+<td valign="top" width="30">
+<p>2</p>
+</td>
+<td valign="top" width="30">
+<p>3</p>
+</td>
+<td valign="top" width="30">
+<p>1</p>
+</td>
+<td valign="top" width="30">
+<p>2</p>
+</td>
+<td valign="top" width="30">
+<p>3</p>
+</td>
+<td valign="top" width="30">
+<p>4</p>
+</td>
+<td valign="top" width="30">
+<p>5</p>
+</td>
+<td valign="top" width="30">
+<p>6</p>
+</td>
+<td valign="top" width="30">
+<p>7</p>
+</td>
+<td valign="top" width="30">
+<p>4</p>
+</td>
+<td valign="top" width="30">
+<p>0</p>
+</td>
+</tr>
+<tr>
+<td valign="top" width="77">
+<p>子串</p>
+</td>
+<td valign="top" width="30">
+<p>a</p>
+</td>
+<td valign="top" width="30">
+<p>g</p>
+</td>
+<td valign="top" width="30">
+<p>c</p>
+</td>
+<td valign="top" width="30">
+<p>t</p>
+</td>
+<td valign="top" width="30">
+<p>a</p>
+</td>
+<td valign="top" width="30">
+<p>g</p>
+</td>
+<td valign="top" width="30">
+<p>c</p>
+</td>
+<td valign="top" width="30">
+<p>a</p>
+</td>
+<td valign="top" width="30">
+<p>g</p>
+</td>
+<td valign="top" width="30">
+<p>c</p>
+</td>
+<td valign="top" width="30">
+<p>t</p>
+</td>
+<td valign="top" width="30">
+<p>a</p>
+</td>
+<td valign="top" width="30">
+<p>g</p>
+</td>
+<td valign="top" width="30">
+<p>c</p>
+</td>
+<td valign="top" width="30">
+<p>t</p>
+</td>
+<td valign="top" width="30">
+<p>g</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>申明一下：下面说的对称不是中心对称，而是中心字符块对称，比如不是abccba，而是abcabc这种对称。</p>
+<h4>（1）逐个查找对称串。</h4>
+<p>这个很简单，我们只要循环遍历这个子串，分别看前1个字符，前2个字符，3个... i个 最后到15个。</p>
+<p>第1个a无对称，所以对称程度0</p>
+<p>前两个ag无对称，所以也是0</p>
+<p>依次类推前面0-4都一样是0</p>
+<p>前5个agcta，可以看到这个串有一个a相等，所以对称程度为1前6个agctag，看得到ag和ag对成，对称程度为2</p>
+<p>这里要注意了，想是这样想，编程怎么实现呢？</p>
+<p>只要按照下面的规则：</p>
+<blockquote dir="ltr">
+<p>a、当前面字符的前一个字符的对称程度为0的时候，只要将当前字符与子串第一个字符进行比较。这个很好理解啊，前面都是0，说明都不对称了，如果多加了一个字符，要对称的话最多是当前的和第一个对称。比如agcta这个里面t的是0，那么后面的a的对称程度只需要看它是不是等于第一个字符a了。</p>
+<p>&nbsp;</p>
+<p>b、按照这个推理，我们就可以总结一个规律，不仅前面是0呀，如果前面一个字符的next值是1，那么我们就把当前字符与子串第二个字符进行比较，因为前面的是1，说明前面的字符已经和第一个相等了，如果这个又与第二个相等了，说明对称程度就是2了。有两个字符对称了。比如上面agctag，倒数第二个a的next是1，说明它和第一个a对称了，接着我们就把最后一个g与第二个g比较，又相等，自然对称成都就累加了，就是2了。</p>
+<p>&nbsp;</p>
+<p>c、按照上面的推理，如果一直相等，就一直累加，可以一直推啊，推到这里应该一点难度都没有吧，如果你觉得有难度说明我写的太失败了。</p>
+<p>当然不可能会那么顺利让我们一直对称下去，如果遇到下一个不相等了，那么说明不能继承前面的对称性了，这种情况只能说明没有那么多对称了，但是不能说明一点对称性都没有，所以遇到这种情况就要重新来考虑，这个也是难点所在。</p>
+<p>&nbsp;</p>
+</blockquote>
+<h4>（2）回头来找对称性</h4>
+<p>这里已经不能继承前面了，但是还是找对称成都嘛，最愚蠢的做法大不了写一个子函数，查找这个字符串的最大对称程度，怎么写方法很多吧，比如查找出所有的当前字符串，然后向前走，看是否一直相等，最后走到子串开头，当然这个是最蠢的，我们一般看到的KMP都是优化过的，因为这个串是有规律的。</p>
+<p>在这里依然用上面表中一段来举个例子：&nbsp;&nbsp;&nbsp;</p>
+<p>位置i=0到14如下,我加的括号只是用来说明问题：</p>
+<p>(a g c t a g c&nbsp;)( a g c t a g c) t</p>
+<p>我们可以看到这段，最后这个t之前的对称程度分别是：1，2，3，4，5，6，7,倒数第二个c往前看有7个字符对称，所以对称为7。但是到最后这个t就没有继承前面的对称程度next值，所以这个t的对称性就要重新来求。</p>
+<p>这里首要要申明几个事实</p>
+<blockquote dir="ltr">
+<p>1、t 如果要存在对称性，那么对称程度肯定比前面这个c 的对称程度小，所以要找个更小的对称，这个不用解释了吧，如果大那么t就继承前面的对称性了。</p>
+<p>2、要找更小的对称，必然在对称内部还存在子对称，而且这个t必须紧接着在子对称之后。</p>
+</blockquote>
+<p>如下图说明。</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>从上面的理论我们就能得到下面的前缀next数组的求解算法。</p>
+<p>void&nbsp;SetPrefix(const&nbsp;char&nbsp;*Pattern,&nbsp;int&nbsp;prefix[])</p>
+<p align="left">{</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;len=CharLen(Pattern);//模式字符串长度。</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prefix[0]=0;</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(int&nbsp;i=1; i&lt;len; i++)</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;k=prefix[i-1];</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //不断递归判断是否存在子对称，k=0说明不再有子对称，Pattern[i] != Pattern[k]说明虽然对称，但是对称后面的值和当前的字符值不相等，所以继续递推</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while( Pattern[i] != Pattern[k]&nbsp;&nbsp;&amp;&amp;&nbsp;&nbsp;k!=0 )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k=prefix[k-1];&nbsp;&nbsp;&nbsp;&nbsp; //继续递归</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if( Pattern[i] == Pattern[k])//找到了这个子对称，或者是直接继承了前面的对称性，这两种都在前面的基础上++</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prefix[i]=k+1;</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prefix[i]=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //如果遍历了所有子对称都无效，说明这个新字符不具有对称性，清0</p>
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+<p align="left">}</p>
+<p align="left">通过这个说明，估计能够理解KMP的next求法原理了，剩下的就很简单了。我自己也有点晕了，实在不喜欢那些数学公式，所以用形象逻辑思维方法总结了一下。</p>
+<p align="left">////////</p>
+<p align="left"><span>KMP还有一种写法：这个写法是经过N个人优化的：</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;"> 1</span> <span style="color: #0000ff;">int</span>  j = -<span style="color: #800080;">1</span>,  i = <span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 2</span> next[<span style="color: #800080;">0</span>] = -<span style="color: #800080;">1</span><span style="color: #000000;">;
+</span><span style="color: #008080;"> 3</span> <span style="color: #0000ff;">while</span>(i &lt;<span style="color: #000000;"> len)
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 5</span>           <span style="color: #0000ff;">if</span>(j == -<span style="color: #800080;">1</span> || ss[i] ==<span style="color: #000000;"> ss[j])
+</span><span style="color: #008080;"> 6</span> <span style="color: #000000;">         {
+</span><span style="color: #008080;"> 7</span> 
+<span style="color: #008080;"> 8</span>                     i++<span style="color: #000000;">;
+</span><span style="color: #008080;"> 9</span>                     j++<span style="color: #000000;">;
+</span><span style="color: #008080;">10</span>                     next[i] =<span style="color: #000000;"> j;
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">         }
+</span><span style="color: #008080;">12</span>          <span style="color: #0000ff;">else</span>
+<span style="color: #008080;">13</span> <span style="color: #000000;">        {
+</span><span style="color: #008080;">14</span>                    j =<span style="color: #000000;"> next[j];
+</span><span style="color: #008080;">15</span> <span style="color: #000000;">        }
+</span><span style="color: #008080;">16</span> }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<p>原文转自：<a href="http://blog.csdn.net/yearn520/article/details/6729426">http://blog.csdn.net/yearn520/article/details/6729426</a></p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="http://www.cnblogs.com/10jschen/category/406138.html">算法</a></div>
+<div id="EntryTag">标签: <a href="http://www.cnblogs.com/10jschen/tag/KMP/">KMP</a></div>
+<div id="blog_post_info"><div id="green_channel">
+<a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(2648451,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+<a id="green_channel_follow" onclick="c_follow();" href="javascript:void(0);">关注我</a>
+<a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a><a id="green_channel_contact" href="http://msg.cnblogs.com/send/%E5%B1%B1%E8%B7%AF%E6%B0%B4%E6%A1%A5" target="_blank">联系我</a>
+<a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/icon_weibo_24.png" alt=""></a>
+<a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+<div id="author_profile_info" class="author_profile_info">
+<a href="http://home.cnblogs.com/u/10jschen/" target="_blank"><img src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/u376612.jpg" class="author_avatar" alt=""></a>
+<div id="author_profile_detail" class="author_profile_info">
+<a href="http://home.cnblogs.com/u/10jschen/">山路水桥</a><br>
+<a href="http://home.cnblogs.com/u/10jschen/followees">关注 - 19</a><br>
+<a href="http://home.cnblogs.com/u/10jschen/followers">粉丝 - 50</a>
+</div>
+</div>
+<div class="clear"></div>
+<div id="author_profile_honor"></div>
+<div id="author_profile_follow">
+    <a href="javascript:void(0);" onclick="c_follow();return false;">+加关注</a>
+</div>
+</div>
+<div id="div_digg">										
+    <div class="diggit" onclick="votePost(2648451,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">3</span>
+    </div>
+	<div class="buryit" onclick="votePost(2648451,&#39;Bury&#39;)"> 
+		<span class="burynum" id="bury_count">0</span>
+	</div>
+	<div class="clear"></div>	
+	<div class="diggword" id="digg_tips">
+    (请您对文章做出评价)
+    </div>	
+</div>
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/19/2646693.html" class="p_n_p_prefix">« </a> 上一篇：<a href="http://www.cnblogs.com/10jschen/archive/2012/08/19/2646693.html" title="发布于2012-08-19 20:25">DOS环境变量</a><br><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648826.html" class="p_n_p_prefix">» </a> 下一篇：<a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648826.html" title="发布于2012-08-21 11:55">HDU 1050(贪心)</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2012-08-21 08:32</span> <a href="http://www.cnblogs.com/10jschen/">山路水桥</a> 阅读(<span id="post_view_count">13547</span>) 评论(<span id="post_comment_count">3</span>)  <a href="http://i.cnblogs.com/EditPosts.aspx?postid=2648451" rel="nofollow">编辑</a> <a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#" onclick="AddToWz(2648451);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,isLogined=false,cb_blogId=121600,cb_entryId=2648451,cb_blogApp=currentBlogApp,cb_blogUserGuid='019b0e22-ca59-e111-aa3f-842b2b196315',cb_entryCreatedDate='2012/8/21 8:32:00';loadViewCount(cb_entryId);</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<br>
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#2770814" class="layer">#1楼</a><a name="2770814" id="comment_anchor_2770814"></a>  <span class="comment_date">2013-09-08 12:25</span> <a id="a_comment_author_2770814" href="http://www.cnblogs.com/siliconvalley/" target="_blank">路过你的苦</a> <a href="http://msg.cnblogs.com/send/%E8%B7%AF%E8%BF%87%E4%BD%A0%E7%9A%84%E8%8B%A6" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_2770814" class="blog_comment_body">简单优雅，通俗易懂，顶楼主。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2770814,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2770814,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_2770814_avatar" style="display:none;">http://pic.cnblogs.com/face/510923/20130609191017.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#2942163" class="layer">#2楼</a><a name="2942163" id="comment_anchor_2942163"></a>  <span class="comment_date">2014-05-19 23:06</span> <a id="a_comment_author_2942163" href="http://www.cnblogs.com/eblly/" target="_blank">eblly</a> <a href="http://msg.cnblogs.com/send/eblly" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_2942163" class="blog_comment_body">（1）逐个查找对称串。<br>这个很简单，我们只要循环遍历这个子串，分别看前1个字符，前2个字符，3个... i个 最后到15个。<br><br>第1个a无对称，所以对称程度0<br><br>前两个ag无对称，所以也是0<br><br>依次类推前面0-4都一样是0<br>=======================<br>最后一個是0～3都一樣是0</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(2942163,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(2942163,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_2942163_avatar" style="display:none;">http://pic.cnblogs.com/face/516742/20160323235518.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#3172227" class="layer">#3楼</a><a name="3172227" id="comment_anchor_3172227"></a><span id="comment-maxId" style="display:none;">3172227</span><span id="comment-maxDate" style="display:none;">2015/4/28 17:00:30</span>  <span class="comment_date">2015-04-28 17:00</span> <a id="a_comment_author_3172227" href="http://home.cnblogs.com/u/710925/" target="_blank">好奇德德</a> <a href="http://msg.cnblogs.com/send/%E5%A5%BD%E5%A5%87%E5%BE%B7%E5%BE%B7" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3172227" class="blog_comment_body">刚开始接触算法，学习了</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3172227,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3172227,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#" onclick="return RefreshPage();">刷新页面</a><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank">【推荐】50万行VC++源码: 大型组态工控、电力仿真CAD与GIS源码库</a><br><a href="http://www.rongcloud.cn/" target="_blank">【推荐】融云即时通讯云－专注为 App 开发者提供IM云服务</a><br></div>
+<div id="opt_under_post"></div>
+<div id="ad_c1" class="c_ad_block"><a href="http://wijmo.gcpowertools.com.cn/microsoft-dynamics-adds-mobile-controls-powered-by-wijmo-5/?utm_source=cnblogs&amp;utm_medium=blogpage&amp;utm_term=bottom&amp;utm_content=wijmo&amp;utm_campaign=community" target="_blank"><img width="300" height="250" src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/24442-20160331135236051-2045919446.jpg" alt=""></a></div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>最新IT新闻</b>:<br> ·  <a href="http://news.cnblogs.com/n/542735/" target="_blank">诺基亚将在全球30多个国家展开裁员</a><br> ·  <a href="http://news.cnblogs.com/n/542734/" target="_blank">再谈运营商离职潮 走还是留这是一个问题</a><br> ·  <a href="http://news.cnblogs.com/n/542733/" target="_blank">他是如何将产品以7亿5千万美金卖给Google的？</a><br> ·  <a href="http://news.cnblogs.com/n/542731/" target="_blank">离岸团队的那些事儿</a><br> ·  <a href="http://news.cnblogs.com/n/542730/" target="_blank">Seeing AI：计算机视觉十年磨一剑，打造盲人的“瑞士军刀”</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="ad_c2" class="c_ad_block"><a href="https://www.jpush.cn/?from=cnblogs01" target="_blank"><img width="468" height="60" src="./KMP算法的next[]数组通俗解释 - 山路水桥 - 博客园_files/24442-20160307140747632-1210035054.jpg" alt=""></a></div>
+<div id="under_post_kb"><div class="itnews c_ad_block" id="kb_block"><b>最新知识库文章</b>:<br><div id="kb_recent"> ·  <a href="http://kb.cnblogs.com/page/542462/" target="_blank">我是一个线程</a><br> ·  <a href="http://kb.cnblogs.com/page/541862/" target="_blank">为什么未来是全栈工程师的世界？</a><br> ·  <a href="http://kb.cnblogs.com/page/541805/" target="_blank">程序bug导致了天大的损失，要枪毙程序猿吗？</a><br> ·  <a href="http://kb.cnblogs.com/page/541230/" target="_blank">如何运维千台以上游戏云服务器</a><br> ·  <a href="http://kb.cnblogs.com/page/539160/" target="_blank">架构漫谈（一）：什么是架构？</a><br></div>» <a href="http://kb.cnblogs.com/" target="_blank">更多知识库文章...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+$(function () {
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);    
+});
+</script>
+</div>
+
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="http://home.cnblogs.com/u/10jschen/">山路水桥</a><br>园龄：<a href="http://home.cnblogs.com/u/10jschen/" title="入园时间：2012-02-18">4年1个月</a><br>粉丝：<a href="http://home.cnblogs.com/u/10jschen/followers/">50</a><br>关注：<a href="http://home.cnblogs.com/u/10jschen/followees/">19</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="cnblogs.UserManager.FollowBlogger(&#39;019b0e22-ca59-e111-aa3f-842b2b196315&#39;)">+加关注</a></div></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2012/07/01&#39;);return false;">&lt;</a></td><td align="center">2012年8月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2012/09/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td><td align="center">1</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/02.html"><u>2</u></a></td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/03.html"><u>3</u></a></td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/08.html"><u>8</u></a></td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/09.html"><u>9</u></a></td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/10.html"><u>10</u></a></td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/14.html"><u>14</u></a></td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/15.html"><u>15</u></a></td><td align="center">16</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/17.html"><u>17</u></a></td><td class="CalWeekendDay" align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/18.html"><u>18</u></a></td></tr><tr><td class="CalWeekendDay" align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/19.html"><u>19</u></a></td><td align="center">20</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21.html"><u>21</u></a></td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/22.html"><u>22</u></a></td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/25.html"><u>25</u></a></td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/29.html"><u>29</u></a></td><td align="center">30</td><td align="center"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/31.html"><u>31</u></a></td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/10jschen/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="http://www.cnblogs.com/10jschen/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="http://www.cnblogs.com/10jschen/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="http://www.cnblogs.com/10jschen/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="http://www.cnblogs.com/10jschen/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass(&#39;itemListLink&#39;, &#39;itemListLin_con&#39;);return false;" href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/10jschen/tag/ACM/">ACM</a>(2)</li><li><a href="http://www.cnblogs.com/10jschen/tag/hash/">hash</a>(1)</li><li><a href="http://www.cnblogs.com/10jschen/tag/KMP/">KMP</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="http://www.cnblogs.com/10jschen/category/406132.html">ACM(27)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="http://www.cnblogs.com/10jschen/category/406139.html">基础积累(36)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="http://www.cnblogs.com/10jschen/category/587821.html">技术(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="http://www.cnblogs.com/10jschen/category/587860.html">面试(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="http://www.cnblogs.com/10jschen/category/394128.html">生活(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="http://www.cnblogs.com/10jschen/category/587822.html">数学(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="http://www.cnblogs.com/10jschen/category/406138.html">算法(58)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="http://www.cnblogs.com/10jschen/archive/2014/07.html">2014年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="http://www.cnblogs.com/10jschen/archive/2014/06.html">2014年6月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="http://www.cnblogs.com/10jschen/archive/2012/10.html">2012年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="http://www.cnblogs.com/10jschen/archive/2012/09.html">2012年9月 (35)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="http://www.cnblogs.com/10jschen/archive/2012/08.html">2012年8月 (82)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="http://www.cnblogs.com/10jschen/archive/2012/07.html">2012年7月 (22)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	59613
+	</li>
+	<li class="liRank">
+		排名 -	3657
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+    <li class="recent_comment_title"><a href="http://www.cnblogs.com/10jschen/archive/2012/07/17/2595858.html#3351485">1. Re:C语言#line预处理器</a></li>
+    <li class="recent_comment_body">补充<br>是从预编译行完了之后的行按100行计<br>即1和2行调换之后，结果不变</li>
+    <li class="recent_comment_author">--Derekwin</li>
+    <li class="recent_comment_title"><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html#3172227">2. Re:KMP算法的next[]数组通俗解释</a></li>
+    <li class="recent_comment_body">刚开始接触算法，学习了</li>
+    <li class="recent_comment_author">--好奇德德</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html">1. KMP算法的next[]数组通俗解释(13546)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/09/03/2668149.html">2. KMP和扩展KMP(5615)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/08/29/2662942.html">3. 轻松搞定面试中的二叉树题目(5549)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/08/19/2646087.html">4. DP问题各种模型的状态转移方程(4306)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/09/11/2679589.html">5. 各大公司面试题集锦(2664)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="http://www.cnblogs.com/10jschen/archive/2012/08/21/2648451.html">1. KMP算法的next[]数组通俗解释(3)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/09/03/2668149.html">2. KMP和扩展KMP(2)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/07/17/2595858.html">3. C语言#line预处理器(1)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/08/14/2638059.html">4. Git入门学习(1)</a></li><li><a href="http://www.cnblogs.com/10jschen/archive/2012/08/19/2646091.html">5. 哈希详解(1)</a></li></ul></div>
+</div>
+</div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2016 山路水桥
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+</body></html>

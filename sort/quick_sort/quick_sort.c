@@ -1,4 +1,4 @@
-/*快排*/
+/*快排，这个算是改进版的了把用了插入排序*/
 #include <stdio.h>
 typedef int ElementType;
 void Swap(ElementType* a,ElementType* b)
@@ -42,7 +42,7 @@ void Insert_Sort(ElementType A[],int N)
 void QSort(ElementType A[],int Left,int Right)
 {/*核心递归函数*/
 	int pivot,cutoff,low,high;
-	cutoff = 2;
+	cutoff = 5;
 	if(cutoff <= Right-Left){
 		pivot = Median3(A,Left,Right);
 		low = Left ;
@@ -69,9 +69,9 @@ void Quick_Sort(ElementType A[],int N)
 int main()
 {
 	int i;
-	ElementType A[10] = {3,2,1,4};
-	Quick_Sort(A,4);
-	for(i=0;i<4;i++){
+	ElementType A[20] = {9527,3,2,1,4,66,73,234,1234,554,3243,12321,45654,77,211,12,985,333,666.233};
+	Quick_Sort(A,20);
+	for(i=0;i<20;i++){
 		printf("%d ",A[i]);
 	}
 }
