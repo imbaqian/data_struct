@@ -5,15 +5,16 @@
 #if 1
 void GetNext(char pattent[],int next[])
 {
-	int j,k;
+	int j;
+	int k;
 	int len;
 	next[0] = 0;
 	len = strlen(pattent);
 	for(j = 1; j<len; j++){
 		k = next[j-1];
 		/*不断递归判断是否存在子对称，k=0说明不再有子对称
-		  pattent[i] != pattent[k]说明虽然对称，但是对称
-		  后面的值和当前的字符值不向等，所以继续递推
+		  pattent[j] != pattent[k]说明虽然对称，但是对称
+		  后面的值和当前的字符值不，所以继续递推
 		 */
 		while(pattent[j] != pattent[k] && k!=0 )
 			k = next[k-1];
