@@ -1,5 +1,6 @@
 /*基数排序
 	---次位优先(Least Significant Digit)
+	可以用于PAT排序测试题～
  */
 #include <malloc.h>
 #include <stdio.h>
@@ -216,13 +217,12 @@ int main()
 	ElementType* A;
 	scanf("%d",&n);
 	A = (ElementType*)malloc(n*sizeof(ElementType));
-	for(i=0;i<n;i++){
+	for(i=0; i< n; i++){
 		scanf("%d ",A+i);
 	}
 	
 	//ElementType A[10] = {4 ,981 ,10 ,-17, 0, -20, 29, 50,  43, -5};
 	//ElementType  A[5] = {4,33,22,11,3 };
-	n =10;
 	lsd(A,n);
 	
 	//LSDRadixSort(A,n);
