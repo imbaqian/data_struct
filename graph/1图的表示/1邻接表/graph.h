@@ -17,7 +17,8 @@ struct ENode{
 	Vertex v1,v2;/*有向边 < v1 , v2 >*/
 	WeightType weight;/*边权重*/		
 };
- typedef PtrToENode Edge;
+typedef PtrToENode Edge;
+
 /*邻接点的定义*/
 typedef struct AdjVNode* PtrToAdjVNode;
 struct AdjVNode{
@@ -42,7 +43,7 @@ struct GNode {
 
 typedef PtrToGNode LGraph;
 
-/*初始化一个有VertexNum个顶点蛋没有边的图*/
+/*初始化一个有VertexNum个顶点但没有边的图*/
 LGraph CreateGraph(int VertexNum);
 /*向图中插入一个边*/
 void InsertEdge(LGraph Graph , Edge E);

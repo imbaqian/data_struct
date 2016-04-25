@@ -5,7 +5,7 @@ int VisitedDFS[MaxVertexNum];
 void Visit(Vertex V)
 {
     printf("%d ",V);
-}
+} 
 
 void DFS(LGraph Graph,Vertex V,void (*Visit)(Vertex) )
 {
@@ -16,5 +16,4 @@ void DFS(LGraph Graph,Vertex V,void (*Visit)(Vertex) )
         if(0 == VisitedDFS[w->AdjV])   /*若邻接点没有被访问*/
             DFS(Graph,w->AdjV,Visit);   /*则递归访问该邻接点*/
     }
-
 }

@@ -1,3 +1,9 @@
+/*
+    bfs-图的广度优先搜索
+    该实现需要队列
+*/
+
+
 #include "bfs.h"
 #include <stdio.h>
 

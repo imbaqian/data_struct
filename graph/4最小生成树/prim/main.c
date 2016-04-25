@@ -30,7 +30,6 @@ void Init(int MST[],int dist[],int parent[])
 		dist[i] = 65535;
 		parent[i] = -1;
 	}
-
 }
 
 
@@ -42,8 +41,9 @@ void Prim(LGraph Graph)
 	int MST[MaxVertexNum];/*记录是否被收录*/
 	int dist[MaxVertexNum];/*记录顶点到MST的距离*/
 	int parent[MaxVertexNum];/*记录顶点的父结点*/
-	Init(MST,dist,parent);
-	/*初始化源点*/
+	
+	Init(MST,dist,parent);/*初始化源点*/
+	
 	dist[0] = 0;	
 
 	while(1){
