@@ -1,39 +1,25 @@
 #include <stdio.h>
-#include <malloc.h>
 
-typedef struct TNode{
-	char data;
-	struct TNode* LChild;
-	struct TNode* RChild;
-}*BinTree;
-
-void CreateBinTree(BinTree* bt)
-{
-	char ch;
-	ch = getchar();
-	if(ch == '#'){
-		*bt = NULL;
-	}
-	else{
-		*bt = (BinTree)malloc(sizeof(struct TNode));
-		(*bt)->data = ch;
-		CreateBinTree(&((*bt)->LChild));
-		CreateBinTree(&((*bt)->RChild));
-	}
-}
-
-void PreOrder(BinTree bt)
-{
-	if(bt != NULL){
-		printf("%c ",bt->data);
-		PreOrder(bt->LChild);
-		PreOrder(bt->RChild);
-	}
-}
+#include "bintree.h"
 int main(void)
 {
-	BinTree bt;
-	CreateBinTree(&bt);
-	PreOrder(bt);
+	
+	BinTree bt = NULL;
+	bt = Insert(3,bt);
+	bt = Insert(4,bt);
+	bt = Insert(2,bt);
+	bt = Insert(7,bt);
+	bt = Insert(6,bt);
+	bt = Insert(74,bt);
+	bt = Insert(33,bt);
+	bt = Insert(55,bt);
+	InOrderTraversal(bt);
+	printf("\n");
+	bt = Delete(33,bt);
+	bt = Delete(2,bt);
+	bt = Delete(100,bt);
+
+	InOrderTraversal(bt);
+	return 0;
 }
 

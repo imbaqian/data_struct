@@ -1,2 +1,2 @@
-main : main.c
-	gcc -g main.c -o main
+main : main.c bintree.c
+	gcc -g main.c bintree.c -o main
