@@ -37,9 +37,10 @@ void Quick_Sort(ElementType A[],int Left,int Right)
 int main()
 {
 	int i;
-	ElementType A[] = {33,44,44,55,6,12,23,3,1,2,5,4};
-	Quick_Sort(A,0,11);
-	for(i=0;i<11;i++){
+	ElementType A[] = {1,3,2,4};
+	int size = sizeof(A) / sizeof(ElementType);
+	Quick_Sort(A,0,size-1);
+	for(i=0;i<size;i++){
 		printf("%d ",A[i]);
 	}
 
